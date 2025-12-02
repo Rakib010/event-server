@@ -1,29 +1,37 @@
-import { envVars } from "../../config/env"
-import AppError from "../../errorHelpers/AppError"
-import { IUser } from "./user.interface"
-import { User } from "./user.model"
-import bcrypt from "bcryptjs"
+import { User } from "./user.model";
 
 
-const createUser = async (payload: Partial<IUser>) => {
-    const { email, password, ...rest } = payload;
-
-    const isUserExits = await User.findOne({ email })
-    if (isUserExits) {
-        throw new AppError(401, "user already exits")
+const userUpdate = async (userId: string) => {
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new Error("User not found");
     }
-
-    const hashedPassword = await bcrypt.hash(password as string, Number(envVars.BCRYPT_SALT_ROUND))
-
-    const user = await User.create({
-        email,
-        password: hashedPassword,
-        ...rest
-    })
 
     return user
 }
 
-export const userServices = {
-    createUser
+const getAllUsers = async () => {
+    const users = await User.find().select("-password");
+    return users
+}
+
+const getUserById = async (userId: string) => {
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    return user
+}
+
+const getMe = async (userId: string) => {
+    const user = await User.findById(userId).select("-password")
+    return user
+}
+
+export const userService = {
+    userUpdate,
+    getAllUsers,
+    getUserById,
+    getMe
 }

@@ -1,10 +1,31 @@
+import { envVars } from "../../config/env"
 import AppError from "../../errorHelpers/AppError"
 import { createAccessTokenWithRefreshToken, createUserToken } from "../../utils/userToken"
 import { IUser } from "../user/user.interface"
 import { User } from "../user/user.model"
 import bcrypt from "bcryptjs"
 
+// create user
+const createUser = async (payload: Partial<IUser>) => {
+    const { email, password, ...rest } = payload;
 
+    const isUserExits = await User.findOne({ email })
+    if (isUserExits) {
+        throw new AppError(401, "user already exits")
+    }
+
+    const hashedPassword = await bcrypt.hash(password as string, Number(envVars.BCRYPT_SALT_ROUND))
+
+    const user = await User.create({
+        email,
+        password: hashedPassword,
+        ...rest
+    })
+
+    return user
+}
+
+// user Login
 const login = async (payload: Partial<IUser>) => {
 
     const { email, password } = payload
@@ -28,6 +49,8 @@ const login = async (payload: Partial<IUser>) => {
         user: user
     }
 }
+
+// Refresh Access Token
 const refreshAccessToken = async (refreshToken: string) => {
     const newAccessToken = await createAccessTokenWithRefreshToken(refreshToken)
 
@@ -36,7 +59,8 @@ const refreshAccessToken = async (refreshToken: string) => {
     }
 }
 
-export const AuthService = {
+export const authService = {
+    createUser,
     login,
     refreshAccessToken
 }

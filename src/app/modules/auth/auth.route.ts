@@ -1,15 +1,12 @@
 import { Router } from "express";
-import { AuthController } from "./auth.controller";
-
-
+import { authController } from "./auth.controller";
 
 const route = Router()
 
-route.post('/login', AuthController.login)
-route.post('/refresh-token', AuthController.refreshAccessToken)
-route.post('/logout', AuthController.accessTokenLogout)
-
-
+route.post('/register', authController.createUser)
+route.post('/login', authController.login)
+route.post('/refresh-token', authController.refreshAccessToken)
+route.post('/logout', authController.accessTokenLogout)
 
 
 export const authRoutes = route

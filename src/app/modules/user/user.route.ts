@@ -1,15 +1,16 @@
-
 import { Router } from 'express';
 import { userController } from './user.controller';
-import { createUserZodSchema } from './user.validation';
-import { validateRequest } from '../../middlewares/validateRequest';
+import { checkAuth } from '../../middlewares/checkAuth';
+import { Role } from './user.interface';
 
 
 const route = Router()
 
-route.post('/register',
-    validateRequest(createUserZodSchema),
-    userController.createUser)
+route.patch('/:id', userController.userUpdate)
+route.get('/', checkAuth(Role.admin), userController.getAllUsers)
+route.get('/:id', checkAuth(Role.admin), userController.getUserById)
+route.get('/me',  userController.getMe)
+
 
 
 

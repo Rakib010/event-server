@@ -1,14 +1,28 @@
 import { Request, Response } from "express"
 import { catchAsync } from "../../utils/catchAsync"
 import { sendResponse } from "../../utils/sendResponse"
-import { AuthService } from "./auth.service"
 import { setAuthCookie } from "../../utils/setCookie"
 import AppError from "../../errorHelpers/AppError"
+import { authService } from "./auth.service"
 
-// custom Login 
+
+// create user
+const createUser = catchAsync(async (req: Request, res: Response) => {
+
+    const user = await authService.createUser(req.body)
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 201,
+        message: "User Created Successfully",
+        data: user
+    })
+})
+
+// user Login 
 const login = catchAsync(async (req: Request, res: Response) => {
 
-    const logInfo = await AuthService.login(req.body)
+    const logInfo = await authService.login(req.body)
 
     setAuthCookie(res, logInfo)
 
@@ -30,7 +44,7 @@ const refreshAccessToken = catchAsync(async (req: Request, res: Response) => {
         throw new AppError(400, "No refresh token received from cookies")
     }
 
-    const tokenInfo = await AuthService.refreshAccessToken(refreshToken)
+    const tokenInfo = await authService.refreshAccessToken(refreshToken)
 
     // cookie set 
     setAuthCookie(res, tokenInfo)
@@ -43,7 +57,7 @@ const refreshAccessToken = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
-
+//  logout
 const accessTokenLogout = catchAsync(async (req: Request, res: Response) => {
 
     res.clearCookie("accessToken");
@@ -58,8 +72,8 @@ const accessTokenLogout = catchAsync(async (req: Request, res: Response) => {
 })
 
 
-
-export const AuthController = {
+export const authController = {
+    createUser,
     login,
     refreshAccessToken,
     accessTokenLogout
