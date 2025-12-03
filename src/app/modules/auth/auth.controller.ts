@@ -9,7 +9,14 @@ import { authService } from "./auth.service"
 // create user
 const createUser = catchAsync(async (req: Request, res: Response) => {
 
-    const user = await authService.createUser(req.body)
+    // If form-data with 'data' field
+    const bodyData = req.body.data ? JSON.parse(req.body.data) : req.body;
+
+    const payload = {
+        ...bodyData,
+        profileImage: req.file?.path
+    }
+    const user = await authService.createUser(payload)
 
     sendResponse(res, {
         success: true,

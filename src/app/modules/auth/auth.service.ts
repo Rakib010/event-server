@@ -9,21 +9,33 @@ import bcrypt from "bcryptjs"
 const createUser = async (payload: Partial<IUser>) => {
     const { email, password, ...rest } = payload;
 
-    const isUserExits = await User.findOne({ email })
-    if (isUserExits) {
-        throw new AppError(401, "user already exits")
+    if (!email) {
+        throw new AppError(400, "Email is required");
     }
 
-    const hashedPassword = await bcrypt.hash(password as string, Number(envVars.BCRYPT_SALT_ROUND))
+    if (!password) {
+        throw new AppError(400, "Password is required");
+    }
+
+    const isUserExits = await User.findOne({ email });
+    if (isUserExits) {
+        throw new AppError(401, "User already exists");
+    }
+
+    const hashedPassword = await bcrypt.hash(
+        password,
+        Number(envVars.BCRYPT_SALT_ROUND)
+    );
 
     const user = await User.create({
         email,
         password: hashedPassword,
-        ...rest
-    })
+        ...rest,
+    });
 
-    return user
-}
+    return user;
+};
+
 
 // user Login
 const login = async (payload: Partial<IUser>) => {
