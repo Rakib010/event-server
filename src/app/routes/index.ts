@@ -2,6 +2,7 @@ import { Router } from "express"
 import { usersRoutes } from "../modules/user/user.route"
 import { authRoutes } from "../modules/auth/auth.route"
 import { eventRoutes } from "../modules/events/event.route"
+import { reviewRoutes } from "../modules/review/review.routes"
 
 
 const routes = Router()
@@ -10,6 +11,7 @@ const routes = Router()
 routes.use('/api/v1/user', usersRoutes)
 routes.use('/api/v1/auth', authRoutes)
 routes.use('/api/v1/events', eventRoutes)
+routes.use('/api/v1/reviews', reviewRoutes)
 
 
 export default routes

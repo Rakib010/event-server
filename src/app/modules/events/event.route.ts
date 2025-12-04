@@ -23,6 +23,11 @@ router.get('/delete-events/:id',
     checkAuth(Role.host),
     eventController.deleteEvent);
 
+router.post('/join/:eventId',
+    checkAuth(Role.user),
+    eventController.joinEvent
+);
+
 router.get('/participants/:id',
     checkAuth(Role.host),
     eventController.getParticipants);

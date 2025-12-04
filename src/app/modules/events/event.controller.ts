@@ -71,6 +71,22 @@ const getAllEvent = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+// user join event 
+const joinEvent = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.userId;
+    const eventId = req.params.eventId;
+
+    const result = await eventService.joinEvent(eventId, userId);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Joined Event Successfully',
+        data: result
+    });
+});
+
+
 // View Participants
 const getParticipants = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?.userId;
@@ -93,5 +109,6 @@ export const eventController = {
     updateEvent,
     deleteEvent,
     getAllEvent,
+    joinEvent,
     getParticipants,
 };

@@ -1,7 +1,7 @@
 import AppError from '../../errorHelpers/AppError';
 import { IEvent } from './event.interface';
 import { Event } from './event.model';
-
+import mongoose from "mongoose";
 
 // Create Event
 const eventCreate = async (payload: Partial<IEvent>, hostId: string) => {
@@ -38,9 +38,31 @@ const getAllEvent = async () => {
     return await Event.find();
 };
 
+// joint event (user)
+const joinEvent = async (eventId: string, userId: string) => {
+    const event = await Event.findById(eventId);
+
+    if (!event) throw new AppError(404, "Event not found");
+
+    // check if event full
+    if (event.participants.length >= event.maxParticipants) {
+        throw new AppError(400, "Event is full");
+    }
+
+    // check if already joined
+    if (event.participants.some(id => id.toString() === userId)) {
+        throw new AppError(400, "Already joined");
+    }
+
+    // convert userId -> ObjectId
+    event.participants.push(new mongoose.Types.ObjectId(userId));
+
+    await event.save();
+    return event;
+};
+
 // Get Participants (Host Only)
 const getParticipants = async (eventId: string, hostId: string) => {
-
     const event = await Event.findById(eventId).populate('participants');
 
     if (!event) throw new AppError(404, "Event not found");
@@ -58,6 +80,6 @@ export const eventService = {
     updateEvent,
     deleteEvent,
     getAllEvent,
+    joinEvent,
     getParticipants,
-
 };
