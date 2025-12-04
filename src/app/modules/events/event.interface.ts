@@ -1,8 +1,8 @@
 export enum EventStatus {
-    OPEN = "Open",
-    FULL = "Full",
-    CANCELLED = "Cancelled",
-    COMPLETED = "Completed",
+    OPEN = "open",
+    FULL = "full",
+    CANCELLED = "cancelled",
+    COMPLETED = "completed",
 }
 
 export interface IEvent {
@@ -15,11 +15,11 @@ export interface IEvent {
     minParticipants: number;
     maxParticipants: number;
     description: string;
-    image?: string;
+    profileImage?: string;
     joiningFee: number;
 
     status: EventStatus;
-    host: string; 
+    host?: string; 
     participants: string[]; 
 
     createdAt?: Date;

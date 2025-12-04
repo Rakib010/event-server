@@ -12,7 +12,7 @@ const eventSchema = new Schema(
         minParticipants: { type: Number, required: true },
         maxParticipants: { type: Number, required: true },
         description: { type: String, required: true },
-        image: { type: String, default: "" },
+        profileImage: { type: String, default: "" },
         joiningFee: { type: Number, default: 0, required: true },
         status: {
             type: String,
@@ -22,7 +22,7 @@ const eventSchema = new Schema(
         host: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: true,
+
         },
         participants: [
             {

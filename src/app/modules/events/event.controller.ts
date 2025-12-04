@@ -3,12 +3,16 @@ import { catchAsync } from '../../utils/catchAsync';
 import { sendResponse } from '../../utils/sendResponse';
 import { eventService } from './event.service';
 
+
 // Create Event
 const eventCreate = catchAsync(async (req: Request, res: Response) => {
-    const userId = req.user?._id;
-    console.log('User ID:', userId);
-    const result = await eventService.eventCreate(req.body, userId);
-
+    const userId = req.user?.userId;
+    const bodyData = req.body.data ? JSON.parse(req.body.data) : req.body;
+    const payload = {
+        ...bodyData,
+        profileImage: req.file?.path,
+    }
+    const result = await eventService.eventCreate(payload, userId);
     sendResponse(res, {
         success: true,
         statusCode: 201,
@@ -19,10 +23,17 @@ const eventCreate = catchAsync(async (req: Request, res: Response) => {
 
 // Update Event (Host Only)
 const updateEvent = catchAsync(async (req: Request, res: Response) => {
-    const userId = req.user?._id;
+    const userId = req.user?.userId;
     const eventId = req.params.id;
 
-    const result = await eventService.updateEvent(eventId, req.body, userId);
+    const bodyData = req.body.data ? JSON.parse(req.body.data) : req.body;
+
+    const payload = {
+        ...bodyData,
+        profileImage: req.file?.path,
+    };
+
+    const result = await eventService.updateEvent(eventId, payload, userId);
 
     sendResponse(res, {
         success: true,
@@ -32,9 +43,37 @@ const updateEvent = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+// delete Event (Host Only)
+const deleteEvent = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.userId;
+    const eventId = req.params.id;
+
+    const result = await eventService.deleteEvent(eventId, userId);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Event Deleted Successfully',
+        data: result
+    });
+});
+
+// Get All Events
+const getAllEvent = catchAsync(async (req: Request, res: Response) => {
+
+    const result = await eventService.getAllEvent();
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Event Deleted Successfully',
+        data: result
+    });
+});
+
 // View Participants
 const getParticipants = catchAsync(async (req: Request, res: Response) => {
-    const userId = req.user?._id;
+    const userId = req.user?.userId;
     const eventId = req.params.id;
 
     const result = await eventService.getParticipants(eventId, userId);
@@ -52,5 +91,7 @@ const getParticipants = catchAsync(async (req: Request, res: Response) => {
 export const eventController = {
     eventCreate,
     updateEvent,
+    deleteEvent,
+    getAllEvent,
     getParticipants,
 };

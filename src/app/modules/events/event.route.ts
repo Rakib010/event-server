@@ -2,14 +2,30 @@ import { Router } from 'express';
 import { checkAuth } from '../../middlewares/checkAuth';
 import { eventController } from './event.controller';
 import { Role } from '../user/user.interface';
+import { multerUpload } from '../../config/multer.config';
 
 const router = Router();
 
-router.post('/events', checkAuth(Role.host), eventController.eventCreate);
+router.post('/',
+    checkAuth(Role.host),
+    multerUpload.single('file'),
+    eventController.eventCreate);
 
-router.patch('/events/:id', checkAuth(Role.host), eventController.updateEvent);
+router.patch('/:id',
+    checkAuth(Role.host),
+    multerUpload.single('file'),
+    eventController.updateEvent);
 
-router.get('/events/:id/participants', checkAuth(Role.host), eventController.getParticipants);
+router.get('/all-events',
+    eventController.getAllEvent);
+
+router.get('/delete-events/:id',
+    checkAuth(Role.host),
+    eventController.deleteEvent);
+
+router.get('/participants/:id',
+    checkAuth(Role.host),
+    eventController.getParticipants);
 
 
 
