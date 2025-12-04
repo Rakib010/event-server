@@ -24,12 +24,13 @@ export const checkAuth = (...authRoles: string[]) =>
                 throw new AppError(400, "user does not exist")
             }
 
+            // console.log("Verified Token:", req.user);
 
-            if (!authRoles.includes(verifiedToken.role)) {
+            if (authRoles.length && !authRoles.includes(verifiedToken.role)) {
                 throw new AppError(403, "You are not permitted to view this route!!!")
             }
+
             req.user = verifiedToken
-            console.log("Verified Token:", req.user);
 
             next()
 

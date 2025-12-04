@@ -5,17 +5,18 @@ import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 
 const userUpdate = catchAsync(async (req: Request, res: Response) => {
-    const userId = req.params.id;
+    const id = req.params.id;
     const verifiedToken = req.user as JwtPayload;
-    console.log("User ID from Params:", userId);
-    console.log("Verified Token User ID:", verifiedToken.userId);
+
+    // If form-data with 'data' field
+    const bodyData = req.body.data ? JSON.parse(req.body.data) : req.body;
 
     const payload = {
-        ...req.body,
+        ...bodyData,
         profileImage: req.file?.path
     }
 
-    const user = await userService.userUpdate(userId, payload, verifiedToken.userId);
+    const user = await userService.userUpdate(id, payload, verifiedToken as JwtPayload);
 
     sendResponse(res, {
         success: true,
@@ -52,7 +53,7 @@ const getUserById = catchAsync(async (req: Request, res: Response) => {
 
 const getMe = catchAsync(async (req: Request, res: Response,) => {
     const decodedToken = req.user as JwtPayload;
-    // console.log(decodedToken);
+    //console.log(decodedToken);
     const users = await userService.getMe(decodedToken.userId)
 
     sendResponse(res, {

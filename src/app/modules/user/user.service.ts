@@ -1,35 +1,31 @@
+import { JwtPayload } from "jsonwebtoken";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
 
 
 const userUpdate = async (
-    userId: string,
+    id: string,
     payload: Partial<IUser>,
-    verifiedToken: { userId: string }
+    verifiedToken: JwtPayload
 ) => {
-    const user = await User.findById(userId);
+    const user = await User.findById(id);
     if (!user) {
         throw new Error("User not found");
     }
 
-    console.log("Payload for update:", payload);
-    console.log("Verified Token User ID:", verifiedToken.userId);
-    console.log("Target User ID:", userId);
     // Authorization check
-    if (verifiedToken.userId !== userId) {
+    if (verifiedToken.userId !== id) {
         throw new Error("Unauthorized to update this user");
     }
 
-    // Update user
     const updatedUser = await User.findByIdAndUpdate(
-        userId,
+        id,
         payload,
         { new: true, runValidators: true }
     );
 
     return updatedUser;
 };
-
 
 const getAllUsers = async () => {
     const users = await User.find().select("-password");
