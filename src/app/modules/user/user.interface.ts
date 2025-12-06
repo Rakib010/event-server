@@ -11,7 +11,7 @@ export interface IUser {
     password: string;
     phone?: string;
     location?: string;
-    profileImage?: string; 
+    profileImage?: string;
     bio?: string;
     interests?: string[];
     role: Role;

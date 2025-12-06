@@ -65,6 +65,60 @@ const getMe = catchAsync(async (req: Request, res: Response,) => {
     })
 })
 
+const deleteUser = catchAsync(async (req: Request, res: Response,) => {
+
+    const users = await userService.deleteUser(req.params.id)
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "User Deleted Successfully",
+        data: users,
+
+    })
+})
+
+const requestHost = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.userId;
+
+    const newRequest = await userService.requestHost(userId);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 201,
+        message: "Host request sent successfully",
+        data: newRequest,
+    });
+});
+
+const getRoleRequests = catchAsync(async (req: Request, res: Response) => {
+
+    const newRequest = await userService.getRoleRequests();
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 201,
+        message: "Pending role requests fetched",
+        data: newRequest,
+    });
+});
+
+const updateRoleRequest = catchAsync(async (req: Request, res: Response) => {
+    const requestId = req.params.id;
+    const { status } = req.body;
+
+    const roleRequest = await userService.updateUserRole(requestId, status);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: `Request ${status} successfully`,
+        data: roleRequest,
+    });
+});
+
+
+
 
 
 
@@ -72,5 +126,9 @@ export const userController = {
     userUpdate,
     getAllUsers,
     getUserById,
-    getMe
+    getMe,
+    deleteUser,
+    requestHost,
+    getRoleRequests,
+    updateRoleRequest
 }

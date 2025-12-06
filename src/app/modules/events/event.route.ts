@@ -20,7 +20,7 @@ router.get('/all-events',
     eventController.getAllEvent);
 
 router.get('/delete-events/:id',
-    checkAuth(Role.host),
+    checkAuth(Role.host, Role.admin),
     eventController.deleteEvent);
 
 router.post('/join/:eventId',

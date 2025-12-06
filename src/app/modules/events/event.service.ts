@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from '../../errorHelpers/AppError';
 import { IEvent } from './event.interface';
 import { Event } from './event.model';
@@ -34,9 +35,66 @@ const deleteEvent = async (eventId: string, hostId: string) => {
 };
 
 // get all events (public)
-const getAllEvent = async () => {
-    return await Event.find();
+const getAllEvent = async (query: Record<string, string>) => {
+    const {
+        title,
+        location,
+        category,
+        date,
+        sort = "-createdAt",
+        page = "1",
+        limit = "10",
+    } = query;
+
+    const filters: any = {};
+
+    // search by title
+    if (title) {
+        filters.title = { $regex: title, $options: "i" };
+    }
+    //search by location
+    if (location) {
+        filters.location = { $regex: location, $options: "i" };
+    }
+
+    // filter by category
+    if (category) {
+        filters.category = category;
+    }
+
+    // filter by date(Exact Day)
+    if (date) {
+        const start = new Date(date);
+        const end = new Date(date);
+        end.setDate(start.getDate() + 1);
+
+        filters.date = {
+            $gte: start,
+            $lt: end
+        };
+    }
+
+    // pagination 
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    // querying
+    const events = await Event.find(filters)
+        .sort(sort)
+        .skip(skip)
+        .limit(limitNum);
+
+    const total = await Event.countDocuments(filters);
+
+    return {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        events,
+    };
 };
+
 
 // joint event (user)
 const joinEvent = async (eventId: string, userId: string) => {

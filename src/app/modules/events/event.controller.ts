@@ -60,13 +60,13 @@ const deleteEvent = catchAsync(async (req: Request, res: Response) => {
 
 // Get All Events
 const getAllEvent = catchAsync(async (req: Request, res: Response) => {
-
-    const result = await eventService.getAllEvent();
+    const query = req.query;
+    const result = await eventService.getAllEvent(query as Record<string, string>);
 
     sendResponse(res, {
         success: true,
         statusCode: 200,
-        message: 'Event Deleted Successfully',
+        message: 'Events fetched successfully',
         data: result
     });
 });
