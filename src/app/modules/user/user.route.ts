@@ -14,7 +14,7 @@ route.patch('/:id',
     userController.userUpdate)
 
 route.get('/get-me',
-    checkAuth(Role.user, Role.host),
+    checkAuth(Role.user, Role.host, Role.admin),
     userController.getMe)
 
 route.get('/',
